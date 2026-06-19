@@ -1,0 +1,300 @@
+import React, { useState, useRef } from "react";
+
+function VotingWizard() {
+
+  const [step, setStep] = useState(1);
+
+  const [candidateName, setCandidateName] = useState("");
+
+  const [mobile, setMobile] = useState("");
+
+  const [generatedOtp, setGeneratedOtp] = useState("");
+
+  const [enteredOtp, setEnteredOtp] = useState("");
+
+  const [otpVerified, setOtpVerified] = useState(false);
+
+  const [voterId, setVoterId] = useState("");
+
+  const [faceVerified, setFaceVerified] = useState(false);
+
+  const [selectedCandidate, setSelectedCandidate] =
+    useState("");
+
+  const videoRef = useRef(null);
+
+  const generateOtp = () => {
+
+    const otp = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+
+    setGeneratedOtp(otp);
+
+    alert(
+      "Demo OTP: " + otp
+    );
+  };
+
+  const verifyOtp = () => {
+
+    if (enteredOtp === generatedOtp) {
+
+      setOtpVerified(true);
+
+      alert("OTP Verified");
+
+    } else {
+
+      alert("Invalid OTP");
+    }
+  };
+
+  const startCamera = async () => {
+
+    try {
+
+      const stream =
+        await navigator.mediaDevices.getUserMedia({
+          video: true
+        });
+
+      videoRef.current.srcObject = stream;
+
+    } catch {
+
+      alert("Camera access denied");
+    }
+  };
+
+  const verifyFace = () => {
+
+    setFaceVerified(true);
+
+    alert("Face Verified");
+  };
+
+  return (
+    <div className="wizard">
+
+      {step === 1 && (
+        <div className="card">
+          <h2>Step 1</h2>
+
+          <input
+            placeholder="Candidate Name"
+            value={candidateName}
+            onChange={(e) =>
+              setCandidateName(e.target.value)
+            }
+          />
+        </div>
+      )}
+
+      {step === 2 && (
+        <div className="card">
+          <h2>Step 2</h2>
+
+          <input
+            placeholder="Mobile Number"
+            value={mobile}
+            onChange={(e) =>
+              setMobile(e.target.value)
+            }
+          />
+
+          <button onClick={generateOtp}>
+            Send OTP
+          </button>
+        </div>
+      )}
+
+      {step === 3 && (
+        <div className="card">
+          <h2>OTP Verification</h2>
+
+          <input
+            placeholder="Enter OTP"
+            value={enteredOtp}
+            onChange={(e) =>
+              setEnteredOtp(e.target.value)
+            }
+          />
+
+          <button onClick={verifyOtp}>
+            Verify OTP
+          </button>
+
+          {otpVerified && (
+            <p>✅ OTP Verified</p>
+          )}
+        </div>
+      )}
+
+      {step === 4 && (
+        <div className="card">
+          <h2>Voter ID Verification</h2>
+
+          <input
+            placeholder="Enter Voter ID"
+            value={voterId}
+            onChange={(e) =>
+              setVoterId(e.target.value)
+            }
+          />
+
+          <p>✅ Voter ID Verified</p>
+        </div>
+      )}
+
+      {step === 5 && (
+        <div className="card">
+          <h2>Face Verification</h2>
+
+          <button onClick={startCamera}>
+            Start Camera
+          </button>
+
+          <br />
+
+          <video
+            ref={videoRef}
+            autoPlay
+            width="300"
+          />
+
+          <br />
+
+          <button onClick={verifyFace}>
+            Verify Face
+          </button>
+
+          {faceVerified && (
+            <p>✅ Face Verified</p>
+          )}
+        </div>
+      )}
+
+      {step === 6 && (
+        <div className="card">
+
+          <h2>Select Candidate</h2>
+
+          <label>
+            <input
+              type="radio"
+              value="Candidate 1"
+              checked={
+                selectedCandidate ===
+                "Candidate 1"
+              }
+              onChange={(e) =>
+                setSelectedCandidate(
+                  e.target.value
+                )
+              }
+            />
+            Candidate 1
+          </label>
+
+          <br />
+
+          <label>
+            <input
+              type="radio"
+              value="Candidate 2"
+              checked={
+                selectedCandidate ===
+                "Candidate 2"
+              }
+              onChange={(e) =>
+                setSelectedCandidate(
+                  e.target.value
+                )
+              }
+            />
+            Candidate 2
+          </label>
+
+          <br />
+
+          <label>
+            <input
+              type="radio"
+              value="Candidate 3"
+              checked={
+                selectedCandidate ===
+                "Candidate 3"
+              }
+              onChange={(e) =>
+                setSelectedCandidate(
+                  e.target.value
+                )
+              }
+            />
+            Candidate 3
+          </label>
+
+        </div>
+      )}
+
+      {step === 7 && (
+        <div className="card">
+
+          <h2>Confirm Vote</h2>
+
+          <h3>{selectedCandidate}</h3>
+
+          <button
+            onClick={() => setStep(8)}
+          >
+            VOTE
+          </button>
+
+        </div>
+      )}
+
+      {step === 8 && (
+        <div className="card success">
+
+          <h2>
+            🎉 Vote Submitted Successfully
+          </h2>
+
+          <button
+            onClick={() => setStep(1)}
+          >
+            Vote Again
+          </button>
+
+        </div>
+      )}
+
+      {step < 8 && (
+        <div className="navButtons">
+
+          <button
+            disabled={step === 1}
+            onClick={() =>
+              setStep(step - 1)
+            }
+          >
+            Previous
+          </button>
+
+          <button
+            onClick={() =>
+              setStep(step + 1)
+            }
+          >
+            Next
+          </button>
+
+        </div>
+      )}
+
+    </div>
+  );
+}
+
+export default VotingWizard;
